@@ -1,6 +1,6 @@
 # MadFW
 
-It is my pet-project - PHP MTV framework.
+Documentation (in progress) for my pet-project - fast and easy PHP MTV framework.
 Most ideas (structure, ORM) from Django, but realised in PHP and enhanced.
 
 
@@ -676,8 +676,8 @@ Example, all param is not required.
         public $model = \Accounts\Accounts::class;
 
         public $list_display = ['login', 'name', 'active', 'last_login']; 
-        public $list_display_styles = [];
-        public $list_display_classes = [];
+        public $list_display_styles = ['login' => 'flex:1'];
+        public $list_display_classes = ['name' => 'cssClassName'];
         public $list_filters = ['active', 'last_login'];
         public $list_order = 'login';
         public $list_editable = ['active'];
@@ -689,17 +689,37 @@ Example, all param is not required.
         public $editonly = false;
         public $collapsed = ['info'];
 
-        public $actions = [];
+        public $actions = [
+            'action' => ['title' => 'Action title', 'icon' => '&#xf058', 'function' => '\\MadAdminAccount::actionMethod']
+        ];
 
         public $fieldset = [
-            'main' => ['login', 'name', 'active'],
-            'info' => ['created', 'last_login', 'statistic']
+            'Fieldset title' => ['login', 'name', 'active'],
+            'Fieldset title' => ['created', 'last_login', 'statistic'],
+            'Fieldset title' => ['orders'],
         ];
 
         // for rewrite default widget or make function field
         public $widgets = [
-            'created' => ['type' => 'DateField'],
+            'created' =>   ['type' => 'DateField'],
             'statistic' => ['type' => 'FunctionField', 'function' => 'MadAdminAccount::statistic']
+        ];
+
+        public $inlines = [
+            'orders' => [
+                'model' => \Shop\Orders::class,
+                'parent' => 'account',
+    
+                'readonly' => [],
+                'extra' => true,
+                'fieldset' => [
+                    'title',
+                    'created',
+                    'total',
+                ],
+
+                'widgets' => []
+            ];
         ];
 
         public static statistic($item) {
