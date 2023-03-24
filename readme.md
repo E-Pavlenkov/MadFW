@@ -668,3 +668,59 @@ Form template example
 
 
 # Admin Models
+
+Example, all param is not required.
+
+    class MadAdminAccount extends MadAdmin
+    {
+        public $model = \Accounts\Accounts::class;
+
+        public $list_display = ['login', 'name', 'active', 'last_login']; 
+        public $list_display_styles = [];
+        public $list_display_classes = [];
+        public $list_filters = ['active', 'last_login'];
+        public $list_order = 'login';
+        public $list_editable = ['active'];
+        public $list_count = 20;
+
+        public $search_fields = ['login', 'name'];
+
+        public $readonly = ['last_login'];
+        public $editonly = false;
+        public $collapsed = ['info'];
+
+        public $actions = [];
+
+        public $fieldset = [
+            'main' => ['login', 'name', 'active'],
+            'info' => ['created', 'last_login', 'statistic']
+        ];
+
+        // for rewrite default widget or make function field
+        public $widgets = [
+            'created' => ['type' => 'DateField'],
+            'statistic' => ['type' => 'FunctionField', 'function' => 'MadAdminAccount::statistic']
+        ];
+
+        public static statistic($item) {
+            ...
+            return $string;
+        }
+    }
+
+Default widgets fo model
+
+    'varchar' =>  ['type' => 'CharField'],
+    'text' =>     ['type' => 'TextField'],
+    'int' =>      ['type' => 'NumberField'],
+    'float' =>    ['type' => 'NumberField'],
+    'boolean' =>  ['type' => 'SwitchField'],
+    'longtext' => ['type' => 'TextField'],
+    'date' =>     ['type' => 'DateField'],
+    'datetime' => ['type' => 'DateTimeField'],
+    'choices'  => ['type' => 'ChoicesField'],
+    'image'  =>   ['type' => 'ImageField'],
+    'file'  =>    ['type' => 'FileField'],
+    'foreign_key' => ['type' => 'ChoicesField'],
+    'many_to_many'  => ['type' => 'ManyToManyField'],
+    'children' => ['type' => 'InlineFields']
