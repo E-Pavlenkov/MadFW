@@ -4,6 +4,9 @@ Documentation (in progress) for my pet-project - fast and easy PHP MTV framework
 Most ideas (structure, ORM) from Django, but realised in PHP and enhanced.
 
 
+
+- [Starting](#starting)
+    - [Migrations](#migrations)
 - [Structure](#structure)
     - [Setting file](#setting-file)
     - [Config file](#config-file)
@@ -59,6 +62,23 @@ Most ideas (structure, ORM) from Django, but realised in PHP and enhanced.
     - [Response functions](#response-functions)
 
 - [Admin Models](#admin-models)
+
+
+# Starting 
+
+Clone base project an setup DB.
+[Start project DB and update/create first user](#migrations).
+
+
+# Migrations
+
+Before migrations set DB settings in config.php
+
+    php _apps/_mad/manage.php start - start project db
+    php _apps/_mad/manage.php mm    - make
+    php _apps/_mad/manage.php dm    - do
+    php _apps/_mad/manage.php um    - undo
+    php _apps/_mad/manage.php user LOGIN PASSWORD NAME - Add / update user
 
 
 # Structure
@@ -333,13 +353,54 @@ public static $file_id
 ## Template functions
 
     csrf()
-    url($name, $params = [])
-    to_tel($phone)
-    paragraph($string)
-    thumbnail($source_file, $width, $height, $params = [])
-    can_edit($name)
-    html_trim($str)
-    month($n)
+    url(\$name, $params = [])
+    to_tel(\$phone)
+    paragraph(\$string)
+    html_trim(\$str)
+    thumbnail(\$source_file, \$width, \$height, \$params = [])
+    month(\$n, $case = false)
+    weekday(\$date)
+    rd($date)
+    rdw($date)
+    rdm($date)
+    rdt($date, $mask = "d.m.Y H:i")
+
+
+**thumbnail**
+Make thumbnail file in THUMB folder. 
+Return thumbnail filename.
+Path in given file saves in thumbnail folder.
+e.x. thumbnail('images\image.png', 100, 0) return '\THUMB\images\image_100.png'
+
+**thumbnail \$params**
+- crop = true/false
+- ext = png/jpg/webp - extention of thumbnail file
+- quality =  0-100 - quality of thumbnail file
+- left
+- top
+- upscale = true/false
+- bg = #rrggbb - set default thumbnail background
+- watermark = ['image' => 'filepath in _SITE/filename.png(PNG24 only)', 'position' => 'top/center/bottom/top-left/top-right/bottom-left/bottom-right']
+
+**month(\$n, $case = false)**
+Return russian month name. N - month number. Case = true ('январь'), case = false (января)
+
+**weekday(\$date)**
+Return russian weekday name of date
+
+**rd(\$date)**
+Return russian date format 'dd.mm.YYYY'
+
+**rdw(\$date)**
+Return russian date format 'dd месяц YYYY'
+e.x. rdw('2022-02-22') => '22 февраля 2022'
+
+**rdm(\$date)**
+Return russian date format 'dd месяц'
+
+**rdt(\$date, \$mask = "d.m.Y H:i")**
+Return russian datetime format 'dd.mm.YYYY HH:MM'
+\$mask - custom date format
 
 
 # ORM
