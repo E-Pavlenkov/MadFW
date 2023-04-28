@@ -42,6 +42,7 @@ Most ideas (structure, ORM) from Django, but realised in PHP and enhanced.
     - [EmailField](#emailfield)
     - [DateField](#datefield)
     - [DateTimeField](#datetimefield)
+    - [TimeField](#timefield)
     - [HiddenField](#hiddenfield)
     - [ColorField](#colorfield)
     - [NumberField](#numberfield)
@@ -515,6 +516,8 @@ active, first, all, last, filter, exclude, pair, sum, max, min, limit, values, c
 | 'field__notin' => array | field NOT IN (array[0], ...) |
 | 'field__between' => array | field BETWEEN (array[0], array[1]) |
 
+***Value 'NOW()' is equal NOW() in SQL query***
+
 **Field can be related, e.g. 'product__price__gte' or 'product__action__label__image__title__like'**
 
 
@@ -542,6 +545,30 @@ active, first, all, last, filter, exclude, pair, sum, max, min, limit, values, c
             "title" => ['type' => 'varchar', 'length' => 255, 'null' => true, 'comment' => 'Title']
         ]
     }
+
+#### Model properties
+
+protected static **\$table** - table name in SQL database
+protected static **\$order** - default ORDER for SQL queries
+
+
+#### Fields params
+
+| Name | Values | Description |
+| ------ | --- | --- |
+| type | varchar, int, image, file, foreign_key, many_to_many, children, one_to_one, boolean, text, longtext, date, datetime | SQL field type |
+| null | true/false | set default NULL on NOT NULL |
+| default | value, 'CURRENT_TIMESTAMP' (for datetime default) | for not null field |
+| comment | text | field description |
+| model | name of model class | for foreign_key, many_to_many, children, one_to_one types |
+| field | name of parent field in model | for many_to_many, children types |
+| ondelete | CASCADE, SET NULL ... | for foreign_key only, SQL ONDELETE action |
+| table | name of many to many table | for many_to_many only |
+| length | number | lenght of varchar field |
+| upload_dir | folder name or class method name retuning folder name | for image, file fields |
+| key | INDEX, UNIQUE | type of index key fo fields if needed |
+
+
 
 ### Queries
 
@@ -574,6 +601,8 @@ Form example in forms.php
 
     class LoginForm extends Form
     {
+        public $model = Accounts::class;
+
         public $fields = [
             'login' =>    ['type' => 'CharField', 'max_length' => 100, 'min_length' => 5, 'required' => true, 'placeholder' => 'name@mail.ru', 'label' => 'Login'],
             'password' => ['type' => 'PasswordField', 'max_length' => 20, 'min_length' => 1, 'required' => true, 'placeholder' => '••••••••', 'label' => 'Password']
@@ -657,6 +686,26 @@ Form template example
 
 ## CharField
 
+    **Example**
+    All params
+
+    "name" =>    [
+        'type' => 'CharField', 
+        'label' => 'Name',     // if set model - set default label from model 'comment'
+        'placeholder' => 'Name', 
+        'min_length' => 2, 
+        'max_length' => 50,    // if set model - set default max_length from model 'length'
+        'default' => '',       // if set model - set default from model 'default'
+        'required' => true,    // if set model - set default required from model 'null'
+        'autocomplete' => false,
+        'disabled' => false,
+        'readonly' => false,
+        'autofocus' => true,
+        'style' => 'color:#000',
+        'help' => 'short help string'  // for mad admin only, shown after label
+    ],
+
+
 ## TextField
 
 ## PasswordField
@@ -670,6 +719,8 @@ Form template example
 ## DateField
 
 ## DateTimeField
+
+## TimeField
 
 ## HiddenField
 
@@ -804,4 +855,4 @@ Default widgets fo model
     'file'  =>    ['type' => 'FileField'],
     'foreign_key' => ['type' => 'ChoicesField'],
     'many_to_many'  => ['type' => 'ManyToManyField'],
-    'children' => ['type' => 'InlineFields']
+    'children' => ['type' => 'ChildrenField']
