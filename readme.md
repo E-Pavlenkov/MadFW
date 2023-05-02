@@ -561,6 +561,7 @@ protected static **\$order** - default ORDER for SQL queries
 | default | value, 'CURRENT_TIMESTAMP' (for datetime default) | for not null field |
 | comment | text | field description |
 | model | name of model class | for foreign_key, many_to_many, children, one_to_one types |
+| filter | simple filters for linked model | for foreign_key, many_to_many, children types |
 | field | name of parent field in model | for many_to_many, children types |
 | ondelete | CASCADE, SET NULL ... | for foreign_key only, SQL ONDELETE action |
 | table | name of many to many table | for many_to_many only |
