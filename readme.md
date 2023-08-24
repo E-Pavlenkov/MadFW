@@ -365,19 +365,19 @@ public static \$tail    - asterics value
 
 ## Template static methods
 
-    Template::render(string \$template, \$data = []) - return rendered html
+    Template::render(string $template, $data = []) - return rendered html
 
 
 ## Template functions
 
     csrf()
-    url(\$name, $params = [])
-    to_tel(\$phone)
-    paragraph(\$string)
-    html_trim(\$str)
-    thumbnail(\$source_file, \$width, \$height, \$params = [])
-    month(\$n, $case = false)
-    weekday(\$date)
+    url($name, $params = [])
+    to_tel($phone)
+    paragraph($string)
+    html_trim($str)
+    thumbnail($source_file, $width, $height, $params = [])
+    month($n, $case = false)
+    weekday($date)
     rd($date)
     rdw($date)
     rdm($date)
