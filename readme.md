@@ -131,11 +131,6 @@ File with project settings
     /** mad admin settings */
     const ADMIN = "admin";
     const ADMIN_PATH = "../_apps/_mad-admin";
-    const ADMIN_PER_PAGE = 15;
-
-    /** mad admin widgets settings */
-    const MAD_EDITOR_COLORS = "#ffffff,#da0000,#008000";
-    const MAD_BLOCK_PATH = 'main';
 
     /** add private settings */
     include ('configs.php');
@@ -152,7 +147,18 @@ File with project settings
     setlocale(LC_ALL, 'ru_RU.UTF-8');
     date_default_timezone_set('Europe/Moscow');
 
-    /** site config vars defaults */
+    /** Site config vars
+    * 
+    *  SITE_CONFIG - array of:
+    *  "Section name" => [
+    *      "var name" => [
+    *          "title" => "var title",
+    *          "type" => "FormField type",
+    *          ... FormField properties like 'default', 'placeholder' ...
+    *          ]
+    *  ],
+    *  ...
+    */
     const SITE_CONFIG = [
         "Fieldset" => [
             "key" => ["title" => "Param name", "type" => "type of FormField", "default" => "defalt value"], 
@@ -183,8 +189,17 @@ File with project settings
 
 Main admin file 
 
-    /** ***********************************************************************************
-    * ADMINPAGES - array of:
+    /** Admin list table settings */
+    const ADMIN_PER_PAGE = 15;
+    const ADMIN_PER_PAGE_ARRAY = [15, 30, 150];
+
+    /** Admin widgets (madblock, madtext) settings */
+    const MAD_EDITOR_COLORS = "#ffffff,#da0000,#008000";
+    const MAD_BLOCK_PATH = 'main';
+
+    /** Admin panel section config
+    * 
+    *  ADMIN_SECTIONS - array of:
     *  "page_slug" => [
     *      "title",
     *        
@@ -194,9 +209,8 @@ Main admin file
     *          'model' =>    Model::class        // MadAdmin model                       
     *      ]
     *  ]
-    *************************************************************************************/
-
-    return [
+    */
+    const ADMIN_SECTIONS = [
         "section" =>
         [
             "Section title",
@@ -269,6 +283,8 @@ Example:
         'route_name' => ['<var:int>', 'module_folder', 'ModuleView'],
         'route_name' => ['path', 'module_folder'],
         'route_name' => ['<var1:str>/page/<var2:str>/*', 'module_folder', 'ModuleView'],
+        'route_name' => ['f_<var1:str>/s_<var2:str>abs/*', 'module_folder', 'ModuleView'],
+        'route_name' => ['*', 'module_folder', 'ModuleView'],
     ]; 
 
 # View 
@@ -278,14 +294,15 @@ Output rendered html from template with variables from context.
 To get variables from route make it static with the same name.
 E.g. 
 **route:**
-'file' => ['<file_id:int>', 'module1', 'Module1View'],
+'file' => ['<file_id:int>/*', 'module1', 'Module1View'],
 **variable in class:**
-public static $file_id
+public static \$file_id - file_id value
+public static \$tail    - asterics value
 
     $template - template path in _SITE
 	$headers - additional headers for response
 
-    View::init($request) - common actions
+    View::init($request) - common actions, calling before request method
     View::post($request) - actions on POST
     View::get($request) - actions on GET
     View::context() - make context 
@@ -421,14 +438,17 @@ Return russian datetime format 'dd.mm.YYYY HH:MM'
     DB::runFetch($query, $args = [])
     DB::runFetchAll($query, $args = [])
 
+*\$query - PDO query with args, \$args - values for $query*
 
 ## Model methods
 
     ModelClass::find($id)
-    ModelClass::save($args)
-    ModelClass::insert($args, $orUpdate = false) == ModelClass::objects()->insert($args, $orUpdate = false)
+    ModelClass::save($columns = null) - update or insert (all columns or columns in args)
+    ModelClass::insert($args)
+    ModelClass::insertOrUpdate($args)
+    ModelClass::insertOrIgnore($args)
     ModelClass::update($conditions, $args) ==  ModelClass::filter($conditions)->update($args)
-    ModelClass::delete($conditions) == filter($conditions)->delete()
+    ModelClass::delete($conditions) == ModelClass:filter($conditions)->delete()
 
 
 ## TreeModel methods
@@ -477,12 +497,11 @@ active, first, all, last, filter, exclude, pair, sum, max, min, limit, values, c
 | having(array \$conditions, \$or = false) | set HAVING with conditions | Query |
 | limit(int \$l1, int \$l2 = null) |  | Query |
 |  |  |  |
-| insert(array \$args = [], \$orUpdate = false) | insert (or update) | int LastInsertedId |   
 | delete() | delete selected rows | PDO result |   
 | update(array \$args) | update from args selected rows | PDO result |   
 |  |  |  |
 | values(string \$column) | return array of column values | array |
-| pair(string \$pair) | return array of key => value from pair: 'key, value' | array |
+| pair(array \$columns) | return array of key => value from pair: [key column, value column] | array |
 | groups(\$column) | return two level array grouped by \$column (PDO::FETCH_GROUP) | array |
 | distinct(\$column) | return distinct array of \$column values | array |
 | count() | return rows count  | int |
@@ -687,8 +706,8 @@ Form template example
 
 ## CharField
 
-    **Example**
-    All params
+**Example**
+All params, 'type' required only
 
     "name" =>    [
         'type' => 'CharField', 
@@ -738,6 +757,22 @@ Form template example
 ## ImageField
 
 ## ChoicesField
+    
+**Example**
+All params, 'type' required only
+
+    "name" =>    [
+        'type' => 'ChoicesField', 
+        'label' => 'Name',     // if set model - set default label from model 'comment'
+        'default' => '',       // if set model - set default from model 'default'
+        'required' => true,    // if set model - set default required from model 'null'
+        'disabled' => false,
+        'readonly' => false,
+        'autofocus' => true,
+        'style' => 'color:#000',
+        'dataset' => ['fieldName', ] // if form model is set, fieldName additing to option as data-fieldName = 'option->fieldName'
+        'help' => 'short help string'  // for mad admin only, shown after label
+    ],
 
 ## SuggestField
 
@@ -794,7 +829,6 @@ Example, all param is not required.
         public $list_filters = ['active', 'last_login'];
         public $list_order = 'login';
         public $list_editable = ['active'];
-        public $list_count = 20;
 
         public $search_fields = ['login', 'name'];
 
