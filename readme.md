@@ -136,7 +136,7 @@ Before migrations set DB settings in config.php
         .htaccess
     
     media (media, files folder, can be moved/renamed, setting up in settings.php)
-    _cache (system folder for store template and routes cache)
+    _cache (system folder for store templates and routes cache)
 
 
 ## Setting file
@@ -211,6 +211,13 @@ File with project settings
 
 Main admin file 
 
+    /** Admin themes */
+    const ADMIN_THEMES = [
+        'light' => 'светлая',
+        'dark' => 'темная',
+        'new' => 'новая'
+    ];
+
     /** Admin list table settings */
     const ADMIN_PER_PAGE = 15;
     const ADMIN_PER_PAGE_ARRAY = [15, 30, 150];
@@ -227,7 +234,7 @@ Main admin file
     *        
     *       "page_slug" => [
     *          'title' =>   'Title of section',  // required
-    *          'module' =>  'module',            // module path in _SITE
+    *          'module' =>  'module1',            // module path in _SITE directory
     *          'model' =>    Model::class        // MadAdmin model                       
     *      ]
     *  ]
@@ -236,7 +243,7 @@ Main admin file
         "section" =>
         [
             "Section title",
-            "module" => ['title' => "Module title", "module" => "module path", "model" => MadAdminModule::class],
+            "module" => ['title' => "Module title", "module" => "module1", "model" => MadAdminModuleModel::class],
             ...
         ],
         ...
@@ -259,12 +266,14 @@ Route file in module has the same structure
     return [
         'admin' => [ADMIN, ADMIN_PATH],
 
-        'index' => ["/", "main", IndexView::class],
-        'media' => ["media/*", "main", mediaGet::class],
-        'pages' => ["<page_alias:str>", "main", PageView::class],
+        'index' => ["/", "module1", IndexView::class],
+        'media' => ["media/*", "module1", MediaGet::class],
+        'pages' => ["<page_alias:str>", "module1", PageView::class],
 
-        /* custom 404 page */
-        'page404' => ['page404', 'main', page404::class]
+        'example' => ["string-<string1:str>/digits-<number:int>-<number2:int>/", "module2", ExampleView::class],
+
+        /* custom 404 page - required */
+        'page404' => ['page404', 'module1', Page404View::class]
     ];
 
 
@@ -294,19 +303,19 @@ File: routes.php
 **name => [path, module_folder, view, args]** - for call view from module with args (not required)
      
 **patterns in path:**
-- <name\:str> - string 
-- <name\:int> - number
-- any more, can be only last character
+- <variable_name\:str> - string 
+- <variable_name\:int> - number
+- \* any more, can be only last character
 
 Example:
 
     return [
-        'route_name' => ['path', 'module_folder', 'ModuleView'],
-        'route_name' => ['<var:int>', 'module_folder', 'ModuleView'],
-        'route_name' => ['path', 'module_folder'],
-        'route_name' => ['<var1:str>/page/<var2:str>/*', 'module_folder', 'ModuleView'],
-        'route_name' => ['f_<var1:str>/s_<var2:str>abs/*', 'module_folder', 'ModuleView'],
-        'route_name' => ['*', 'module_folder', 'ModuleView'],
+        'route_name_1' => ['path', 'module1', 'Module1View'],
+        'route_name_2' => ['<var:int>', 'module1', 'Module1View'],
+        'module2' => ['path', 'module2'],
+        'route_name_4' => ['<var1:str>/page/<var2:str>/*', 'module1', 'Module1View'],
+        'route_name_5' => ['f_<var1:str>/s_<var2:str>abs/*', 'module1', 'Module1View'],
+        'route_name_6' => ['*', 'module1', 'Module1View'],
     ]; 
 
 # View 
@@ -404,6 +413,17 @@ public static \$tail    - asterics value
     rdw($date)
     rdm($date)
     rdt($date, $mask = "d.m.Y H:i")
+
+
+**url**
+\$name - name from routes.  
+\$params - data for url variables
+
+Examples: 
+
+    url('route_name_2', [2])
+    url('module2:route_name')
+    url('module2:submodule:route_name', [$string_value, $int_value, 'string'])
 
 
 **thumbnail**
@@ -830,7 +850,7 @@ All params, 'type' required only
 | ------ | ----------- | ------ |
 | import(string \$files) | files is string contains relative paths to files separated by commas without extention, e.g. 'module1/models, modeule2/index' |  - |
 | is_captcha() | check POST data contain captcha data and if it is valid | boolean |
-| reverse(\$name, \$params = []) | get url path from routers | string |
+| reverse(\$name, \$params = []) | get url path from routers, [see url in template functions](#template-functions) | string |
 | plural(int \$n, array \$forms) | get string in plural form \$from forms by \$n | string |
 | switch_to_ru($value) |  | string |
 | mark(string \$string, string or array \$query) | highlight string with tag \<mark\> from \$query | string |
