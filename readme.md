@@ -158,7 +158,7 @@ File with project settings
     include ('configs.php');
 
     /** site modules in which it will be collected static and models migrations */
-    const MODULES = [ADMIN_PATH, 'main'];
+    const MODULES = [ADMIN_PATH, 'module1', 'module2'];
 
     const MIDDLEWARE = [ 
         "madStaticCollector"
