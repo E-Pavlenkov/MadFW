@@ -3,6 +3,7 @@
 Documentation (in progress) for my pet-project - fast and easy PHP MTV framework.
 Most ideas (structure, ORM) from Django, but realised in PHP and enhanced.
 
+<sup>Updated: 2024-02-24</sup>
 
 
 - [Starting](#starting)
@@ -67,7 +68,27 @@ Most ideas (structure, ORM) from Django, but realised in PHP and enhanced.
 
 # Starting 
 
-Clone base project an setup DB.
+Clone base project an setup DB  in config.php.
+
+**'connection' - PDO::__construct $dns string**
+
+Example #1
+
+    const DB_CONFIG = [
+        'connection' => 'mysql:host=localhost;dbname=test;charset=utf8',
+        'username' => 'root', 
+        'password' => 'root',
+        'options' => [
+            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
+        ]
+    ];
+
+Example #2
+
+    const DB_CONFIG = [
+        'connection' => 'sqlite:file.db',
+    ];
+
 [Start project DB and update/create first user](#migrations).
 
 
@@ -75,12 +96,13 @@ Clone base project an setup DB.
 
 Before migrations set DB settings in config.php
 
-    php _apps/_mad/manage.php start - start project db
-    php _apps/_mad/manage.php mm    - make
-    php _apps/_mad/manage.php dm    - do
-    php _apps/_mad/manage.php um    - undo
-    php _apps/_mad/manage.php user LOGIN PASSWORD NAME - Add / update user
+    php _apps/_mad/manage.php mm    - make migrations
+    php _apps/_mad/manage.php dm    - migrate
+    php _apps/_mad/manage.php user LOGIN PASSWORD NAME - Add / update user. NAME if not set equals LOGIN
 
+    php _apps/_mad/manage.php um    - undo last migrate
+    php _apps/_mad/manage.php cc    - clear cache
+    
 
 # Structure
 
@@ -493,6 +515,7 @@ active, first, all, last, filter, exclude, pair, sum, max, min, limit, values, c
 | rawFilter(\$where, array \$args) | add to select raw expression, e.g. 'AND id \& 1' | Query |
 |  |  |  |
 | orderBy(string \$order, \$add = false) | set new select order or add to existing order | Query |
+| orderBySet(\$column, \$set) | set order by set array (ORDER BY FIND_IN_SET) | Query |
 | groupBy(string \$fields) | set GROUP BY | Query | 
 | having(array \$conditions, \$or = false) | set HAVING with conditions | Query |
 | limit(int \$l1, int \$l2 = null) |  | Query |
@@ -758,20 +781,31 @@ All params, 'type' required only
 
 ## ChoicesField
     
+The list is taken from:
+1. param 'choices'
+2. param 'model', may use param 'filter'
+3. if form model and form model choices are set - model choices
+4. if form model and form related model are set - related model rows, may use param 'filter'
+
+
 **Example**
 All params, 'type' required only
 
     "name" =>    [
         'type' => 'ChoicesField', 
-        'label' => 'Name',     // if set model - set default label from model 'comment'
-        'default' => '',       // if set model - set default from model 'default'
-        'required' => true,    // if set model - set default required from model 'null'
+        'choices' => [],       // list of choices
+        'label' => 'Name',     // if set form model - set default label from model 'comment'
+        'default' => '',       // if set form model - set default from model 'default'
+        'required' => true,    // if set form model - set default required from model 'null'
         'disabled' => false,
         'readonly' => false,
         'autofocus' => true,
         'style' => 'color:#000',
-        'dataset' => ['fieldName', ] // if form model is set, fieldName additing to option as data-fieldName = 'option->fieldName'
-        'help' => 'short help string'  // for mad admin only, shown after label
+        'dataset' => ['fieldName', ], // if form model is set, fieldName additing to option as data-fieldName = 'option->fieldName'
+        'help' => 'short help string',  // for mad admin only, shown after label
+       
+        'model' => Model::class,  // for data from custom model 
+        'filter' => ['active' => true] // for filter data from 'model' or related model from form model
     ],
 
 ## SuggestField
@@ -831,6 +865,7 @@ Example, all param is not required.
         public $list_editable = ['active'];
 
         public $search_fields = ['login', 'name'];
+        public $search_fields_help = 'Search by login or name';
 
         public $readonly = ['last_login'];
         public $editonly = false;
@@ -891,3 +926,10 @@ Default widgets fo model
     'foreign_key' => ['type' => 'ChoicesField'],
     'many_to_many'  => ['type' => 'ManyToManyField'],
     'children' => ['type' => 'ChildrenField']
+
+Widget FunctionField
+
+    'name' => ['type' => 'FunctionField', 'function' => 'functionName', 'label' => 'Label', 'options' => []]
+
+    Function arguments $item
+    Options need only for filter. Also for filter needs function with name 'functionName_filter' (arguments $query, $value)
