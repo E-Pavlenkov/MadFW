@@ -3,7 +3,7 @@
 Documentation (in progress) for my pet-project - fast and easy PHP MTV framework.
 Most ideas (structure, ORM) from Django, but realised in PHP and enhanced.
 
-<sup>Updated: 2024-02-24</sup>
+<sup>Updated: 2024-03-05</sup>
 
 
 - [Starting](#starting)
@@ -558,7 +558,7 @@ active, first, all, last, filter, exclude, pair, sum, max, min, limit, values, c
 |  |  |  |
 | select_related(string \$names) | add related fields to select, e.g. 'images, label__images' of 'action__label__image__title' | Query |
 | filter_related(string \$name, array \$filters, \$or=false) | add filter to select related fields | Query |
-   
+| througth(string \$name) | for many to many relations select many to many table, next filter applied to many to many table | Query |
 
 
 ### Conditions syntax
