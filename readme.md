@@ -3,7 +3,7 @@
 Documentation (in progress) for my pet-project - fast and easy PHP MTV framework.
 Most ideas (structure, ORM) from Django, but realised in PHP and enhanced.
 
-<sup>Updated: 2024-03-05</sup>
+<sup>Updated: 2024-03-12</sup>
 
 
 - [Starting](#starting)
@@ -534,7 +534,7 @@ active, first, all, last, filter, exclude, pair, sum, max, min, limit, values, c
 | active() | short form of filter(['active' => true]) | Query |
 | rawFilter(\$where, array \$args) | add to select raw expression, e.g. 'AND id \& 1' | Query |
 |  |  |  |
-| orderBy(string \$order, \$add = false) | set new select order or add to existing order | Query |
+| orderBy(string|array \$order, \$add = false) | set new select order or add to existing order, example: 'id DESC' or ['id' => 'DESC', 'blocks__title' => 'ASC'] | Query |
 | orderBySet(\$column, \$set) | set order by set array (ORDER BY FIND_IN_SET) | Query |
 | groupBy(string \$fields) | set GROUP BY | Query | 
 | having(array \$conditions, \$or = false) | set HAVING with conditions | Query |
@@ -573,10 +573,12 @@ active, first, all, last, filter, exclude, pair, sum, max, min, limit, values, c
 | 'field__lt' => 'value' | field < value |
 | 'field__lte' => 'value' | field <= value |
 | 'field__like' => 'value' | field LIKE value |
+| 'field__likes' => array | field LIKE array[0] OR field LIKE array[1] ... |
 | 'field__notlike => 'value' | field NOT LIKE value |
 | 'field__in' => array | field IN (array[0], ...) |
 | 'field__notin' => array | field NOT IN (array[0], ...) |
 | 'field__between' => array | field BETWEEN (array[0], array[1]) |
+| 'field__regexp' => string | field REGEXP 'string' |
 
 ***Value 'NOW()' is equal NOW() in SQL query***
 
@@ -881,12 +883,16 @@ Example, all param is not required.
         public $list_display_styles = ['login' => 'flex:1'];
         public $list_display_classes = ['name' => 'cssClassName'];
         public $list_filters = ['active', 'last_login'];
+        public $list_select_related = [];
         public $list_order = 'login';
         public $list_editable = ['active'];
+        public $list_query = [];
 
         public $search_fields = ['login', 'name'];
         public $search_fields_help = 'Search by login or name';
+        public $search_russian = true; // allow search in russian even if keyboard langauge is english
 
+        public $readonlyall = false;
         public $readonly = ['last_login'];
         public $editonly = false;
         public $collapsed = ['info'];
