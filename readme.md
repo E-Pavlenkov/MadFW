@@ -3,7 +3,7 @@
 Documentation (in progress) for my pet-project - fast and easy PHP MTV framework.
 Most ideas (structure, ORM) from Django, but realised in PHP and enhanced.
 
-<sup>Updated: 2024-03-12</sup>
+<sup>Updated: 2024-03-13</sup>
 
 
 - [Starting](#starting)
@@ -332,6 +332,7 @@ public static \$tail    - asterics value
 
     $template - template path in _SITE
 	$headers - additional headers for response
+    $last_modified - LastMmodified header, = gmdate("D, d M Y H:i:s \G\M\T");
 
     View::init($request) - common actions, calling before request method
     View::post($request) - actions on POST
