@@ -332,7 +332,7 @@ public static \$tail    - asterics value
 
     $template - template path in _SITE
 	$headers - additional headers for response
-    $last_modified - LastMmodified header, = gmdate("D, d M Y H:i:s \G\M\T");
+    $last_modified - LastModified header, = gmdate("D, d M Y H:i:s \G\M\T");
 
     View::init($request) - common actions, calling before request method
     View::post($request) - actions on POST
